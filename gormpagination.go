@@ -24,7 +24,7 @@ import (
 type ResponseContext interface {
 	Cache(string) ResponseContext
 	Fields([]string) ResponseContext
-	Response(interface{}) Page
+	Response(interface{}) Result
 }
 
 // RequestContext interface
@@ -65,7 +65,7 @@ func New(params ...interface{}) *Pagination {
 // model := db.Where("status > ?", "active").Model(&User{})
 // gp := gormpagination.New()
 // page := gp.Paginating(model, req, &[]User{})
-func (p *Pagination) Paginating(stmt *gorm.DB, req interface{}, res interface{}) Page {
+func (p *Pagination) Paginating(stmt *gorm.DB, req interface{}, res interface{}) Result {
 	return p.Paginate(stmt).Request(req).Response(res)
 }
 
@@ -110,7 +110,7 @@ type resContext struct {
 }
 
 // Function to get list with pagination meta
-func (r resContext) Response(res interface{}) Page {
+func (r resContext) Response(res interface{}) Result {
 	p := r.Pagination
 	query := r.Statement
 	p.Config = defaultConfig(p.Config)
@@ -132,7 +132,7 @@ func (r resContext) Response(res interface{}) Page {
 		}
 	}
 
-	page := Page{}
+	page := Result{}
 	pr := parseRequest(r.Request, *p.Config)
 	causes := createCauses(pr)
 	cKey := ""
@@ -822,8 +822,8 @@ type pageFilters struct {
 	Fields      []string
 }
 
-// Page result wrapper
-type Page struct {
+// Result wrapper
+type Result struct {
 	Items        interface{} `json:"items"`
 	Total        int64       `json:"total"`
 	StartItem    int64       `json:"start_item"`
