@@ -1,6 +1,6 @@
 module github.com/usepzaka/gorm-pagination
 
-go 1.21.4
+go 1.20.0
 
 require (
 	github.com/iancoleman/strcase v0.3.0
@@ -10,9 +10,9 @@ require (
 )
 
 require (
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 )
