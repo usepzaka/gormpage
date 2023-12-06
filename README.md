@@ -1,11 +1,10 @@
 # Gorm Pagination
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/usepzaka/gorm-pagination.svg)](https://pkg.go.dev/github.com/usepzaka/gorm-pagination)
-[![Github Actions](https://github.com/usepzaka/gorm-pagination/workflows/Go/badge.svg)](https://github.com/usepzaka/gorm-pagination/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/usepzaka/gorm-pagination)](https://goreportcard.com/report/github.com/usepzaka/gorm-pagination)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/usepzaka/gorm-pagination)](https://github.com/usepzaka/gorm-pagination/releases)
 
-Simple way to paginate [Gorm](https://github.com/go-gorm/gorm) result. **pagination** is compatible with [net/http](https://golang.org/pkg/net/http/) and [fasthttp](https://github.com/valyala/fasthttp). This library also supports many frameworks are based on net/http or fasthttp.
+Simple way to paginating [Gorm](https://github.com/go-gorm/gorm) result. **pagination** is compatible with [net/http](https://golang.org/pkg/net/http/) and [fasthttp](https://github.com/valyala/fasthttp). This library also supports many frameworks are based on net/http or fasthttp.
 
 ## Table Of Contents
 - [Gorm Pagination](#gorm-pagination)
@@ -900,7 +899,7 @@ GET /users/1/addresses
 }
 ```
 
-Paginate doesn't support for customized json or table field name.  
+Gorm-Pagination doesn't support for customized json or table field name.  
 Make sure your struct properties have same name with gorm column and json property before you expose them.  
 
 Example bad configuration:  
