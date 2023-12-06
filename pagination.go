@@ -1,4 +1,4 @@
-package gormpagination
+package pagination
 
 import (
 	"crypto/md5"

@@ -1,4 +1,4 @@
-module github.com/usepzaka/gormpagination
+module github.com/usepzaka/gorm-pagination
 
 go 1.21.4
 
