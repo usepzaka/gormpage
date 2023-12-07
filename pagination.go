@@ -1,4 +1,4 @@
-package pagination
+package gormpage
 
 import (
 	"crypto/md5"
@@ -55,7 +55,7 @@ func New(params ...interface{}) *Pagination {
 	return &Pagination{Config: defaultConfig(nil)}
 }
 
-// Paginating return page of results
+// Paginate return page of results
 //
 // var db *gorm.DB = ...
 // var req *http.Request = ...
@@ -63,13 +63,13 @@ func New(params ...interface{}) *Pagination {
 // var req *fasthttp.Request
 
 // model := db.Where("status > ?", "active").Model(&User{})
-// gp := gormpagination.New()
-// page := gp.Paginating(model, req, &[]User{})
-func (p *Pagination) Paginating(stmt *gorm.DB, req interface{}, res interface{}) Result {
-	return p.Paginate(stmt).Request(req).Response(res)
+// gp := gpagination.New()
+// page := gp.Paginate(model, req, &[]User{})
+func (p *Pagination) Paging(statement *gorm.DB, request interface{}, response interface{}) Result {
+	return p.Paginate(statement).Request(request).Response(response)
 }
 
-// With function. To include the GORM statement
+// Paging function. To include the GORM statement
 //
 // var db *gorm.DB = ...
 // var req *http.Request = ...
@@ -77,7 +77,7 @@ func (p *Pagination) Paginating(stmt *gorm.DB, req interface{}, res interface{})
 // var req *fasthttp.Request
 
 // model := db.Where("status > ?", "active").Model(&User{})
-// gp := gormpagination.New()
+// gp := gpagination.New()
 // page := gp.Paginate(model).Request(req).Response(&[]Article{})
 func (p *Pagination) Paginate(stmt *gorm.DB) RequestContext {
 	return reqContext{

@@ -1,10 +1,10 @@
 # Gorm Pagination
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/usepzaka/gorm-pagination.svg)](https://pkg.go.dev/github.com/usepzaka/gorm-pagination)
-[![Go Report Card](https://goreportcard.com/badge/github.com/usepzaka/gorm-pagination)](https://goreportcard.com/report/github.com/usepzaka/gorm-pagination)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/usepzaka/gorm-pagination)](https://github.com/usepzaka/gorm-pagination/releases)
+[![Go Reference](https://pkg.go.dev/badge/github.com/usepzaka/gormpage.svg)](https://pkg.go.dev/github.com/usepzaka/gormpage)
+[![Go Report Card](https://goreportcard.com/badge/github.com/usepzaka/gormpage)](https://goreportcard.com/report/github.com/usepzaka/gormpage)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/usepzaka/gormpage)](https://github.com/usepzaka/gormpage/releases)
 
-Simple way to paginating [Gorm](https://github.com/go-gorm/gorm) result. **pagination** is compatible with [net/http](https://golang.org/pkg/net/http/) and [fasthttp](https://github.com/valyala/fasthttp). This library also supports many frameworks are based on net/http or fasthttp.
+Simple way to paginating [Gorm](https://github.com/go-gorm/gorm) result. **gormpage** is compatible with [net/http](https://golang.org/pkg/net/http/) and [fasthttp](https://github.com/valyala/fasthttp). This library also supports many frameworks are based on net/http or fasthttp.
 
 ## Table Of Contents
 - [Gorm Pagination](#gorm-pagination)
@@ -44,7 +44,7 @@ Simple way to paginating [Gorm](https://github.com/go-gorm/gorm) result. **pagin
 ## Installation
 
 ```bash
-go get -u github.com/usepzaka/gorm-pagination
+go get -u github.com/usepzaka/gormpage
 ```
 
 ## Configuration
@@ -56,9 +56,9 @@ var req *http.Request = ...
 // var req *fasthttp.Request
 
 model := db.Where("id > ?", 1).Model(&Article{})
-pg := pagination.New()
-page := pg.Paginating(model, req, &[]Article{})
-// or 
+gp := gormpage.New()
+page := pg.Paging(model, req, &[]Article{})
+// or
 page := pg.Paginate(model).Request(req).Response(&[]Article{})
 
 log.Println(page.Total)
@@ -67,32 +67,32 @@ log.Println(page.First)
 log.Println(page.Last)
 
 ```
-you can customize config with `pagination.Config` struct.  
+you can customize config with `gormpage.Config` struct.  
 ```go
-pg := pagination.New(&pagination.Config{
+gp := gormpage.New(&gormpage.Config{
     DefaultSize: 50,
 })
 ```
 see more about [customize default configuration](#customize-default-configuration).
 
->You can use `Pagination` or `Paginate`, because the results will be the same. So there is no need to use both at the same time.
+>You can use `Paging` or `Paginate`, because the results will be the same. So there is no need to use both at the same time. Choose on your prefer. But `Paginate` method extra feature for Filtering.
 
 
 ## Pagination Result
 
 ```go
 {
-    // the result items
+    // The result items
     "items": *[]any, 
     
-    // total results
+    // Total results
     // including next pages
     "total": number,   
     
-    // start record show
+    // First seen visible record 
     "start_item": number,   
     
-    // end record show
+    // Last visible record
     "end_item": number,   
 
     // Current page
@@ -219,17 +219,17 @@ example paging, sorting and filtering:
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
 
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         model := db.Joins("User").Model(&Article{})
-        paginated := pg.Paginating(model, r, &[]Article{})
+        paginated := gp.Paginate(model, r, &[]Article{})
         j, _ := json.Marshal(paginated)
         w.Header().Set("Content-type", "application/json")
         w.Write(j)
@@ -245,17 +245,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
 
     fasthttp.ListenAndServe(":3000", func(ctx *fasthttp.RequestCtx) {
         model := db.Joins("User").Model(&Article{})
-        paginated := pg.Paginating(model, &ctx.Request, &[]Article{})
+        paginated := gp.Paginate(model, &ctx.Request, &[]Article{})
         j, _ := json.Marshal(paginated)
         ctx.SetContentType("application/json")
         ctx.SetBody(j)
@@ -268,17 +268,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     app := mux.NewRouter()
     app.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
         model := db.Joins("User").Model(&Article{})
-        paginated := pg.Paginating(model, req, &[]Article{})
+        paginated := gp.Paginate(model, req, &[]Article{})
         j, _ := json.Marshal(paginated)
         w.Header().Set("Content-type", "application/json")
         w.Write(j)
@@ -294,17 +294,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     app := fiber.New()
     app.Get("/", func(c *fiber.Ctx) error {
         model := db.Joins("User").Model(&Article{})
-        return c.JSON(pg.Paginating(model, c.Request(), &[]Article{}))
+        return c.JSON(gp.Paginate(model, c.Request(), &[]Article{}))
     })
 
     app.Listen(":3000")
@@ -317,17 +317,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     app := echo.New()
     app.GET("/", func(c echo.Context) error {
         model := db.Joins("User").Model(&Article{})
-        return c.JSON(200, pg.Paginating(model, c.Request(), &[]Article{}))
+        return c.JSON(200, gp.Paginate(model, c.Request(), &[]Article{}))
     })
 
     app.Logger.Fatal(app.Start(":3000"))
@@ -340,17 +340,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     app := gin.Default()
     app.GET("/", func(c *gin.Context) {
         model := db.Joins("User").Model(&Article{})
-        c.JSON(200, pg.Paginating(model, c.Request, &[]Article{}))
+        c.JSON(200, gp.Paginate(model, c.Request, &[]Article{}))
     })
     app.Run(":3000")
 }
@@ -363,18 +363,18 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     app := martini.Classic()
     app.Use(render.Renderer())
     app.Get("/", func(req *http.Request, r render.Render) {
         model := db.Joins("User").Model(&Article{})
-        r.JSON(200, pg.Paginating(model, req, &[]Article{}))
+        r.JSON(200, gp.Paginate(model, req, &[]Article{}))
     })
     app.Run()
 }
@@ -385,17 +385,17 @@ func main() {
 package main
 
 import (
-    "github.com/usepzaka/gorm-pagination"
+    "github.com/usepzaka/gormpage"
     ...
 )
 
 func main() {
     // var db *gorm.DB
-    pg := pagination.New()
+    gp := gormpage.New()
     web.Get("/", func(c *context.Context) {
         model := db.Joins("User").Model(&Article{})
         c.Output.JSON(
-            pg.Paginating(model, c.Request, &[]Article{}), false, false)
+            gp.Paginate(model, c.Request, &[]Article{}), false, false)
     })
     web.Run(":3000")
 }
@@ -580,10 +580,10 @@ For `null` value, you can send string `"null"` or `null` value, *(lower)*
 
 ## Customize default configuration
 
-You can customize the default configuration with `pagination.Config` struct. 
+You can customize the default configuration with `gormpage.Config` struct. 
 
 ```go
-pg := pagination.New(&pagination.Config{
+gp := gormpage.New(&gormpage.Config{
     DefaultSize: 50,
 })
 ```
@@ -623,8 +623,8 @@ override := func(article *Article) {
 var articles []Article
 model := db.Joins("User").Model(&Article{})
 
-pg := pagination.New()
-result := pg.Paginating(model, httpRequest, &articles)
+gp := gormpage.New()
+result := gp.Paginate(model, httpRequest, &articles)
 for index := range articles {
     override(&articles[index])
 }
@@ -659,7 +659,7 @@ type UserNullable {
 nameAndIDOnly := []string{"name","id"}
 model := db.Model(&User{})
 
-page := pg.With(model).
+page := gp.Paging(model).
    Request(req).
    Fields(nameAndIDOnly).
    Response([]&UserNullable{})
@@ -680,11 +680,11 @@ page := pg.With(model).
 ## Dynamic field selector
 If the request contains query parameter `fields` (eg: `?fieilds=name,id`), then the response will show only `name` and `id`. To activate this feature, please set `FieldSelectorEnabled` to `true`.
 ```go
-config := pagination.Config{
+config := gormpage.Config{
     FieldSelectorEnabled: true,
 }
 
-pg := pagination.New(config)
+gp := gormpage.New(config)
 ```
 
 ## Speed up response with cache
@@ -703,11 +703,11 @@ func main() {
     adapterConfig := gocache.InMemoryCacheConfig{
         ExpiresIn: 1 * time.Hour,
     }
-    pg := pagination.New(&pagination.Config{
+    gp := gormpage.New(&gormpage.Config{
         CacheAdapter: gocache.NewInMemoryCache(adapterConfig),
     })
 
-    page := pg.With(model).
+    page := pg.Paging(model).
                Request(req).
                Cache("article"). // set cache name
                Response(&[]Article{})
@@ -728,11 +728,11 @@ func main() {
         Directory: "/writable/path/to/my-cache-dir",
         ExpiresIn: 1 * time.Hour,
     }
-    pg := pagination.New(&pagination.Config{
+    gp := gormpage.New(&gormpage.Config{
         CacheAdapter: gocache.NewDiskCache(adapterConfig),
     })
 
-    page := pg.With(model).
+    page := gp.Paging(model).
                Request(req).
                Cache("article"). // set cache name
                Response(&[]Article{})
@@ -760,11 +760,11 @@ func main() {
         Client:    client,
         ExpiresIn: 1 * time.Hour,
     }
-    pg := pagination.New(&pagination.Config{
+    gp := gormpage.New(&gormpage.Config{
         CacheAdapter: cache.NewRedisCache(adapterConfig),
     })
 
-    page := pg.With(model).
+    page := gp.Paging(model).
                Request(req).
                Cache("article").
                Response(&[]Article{})
@@ -798,11 +798,11 @@ func main() {
         Index:     "exampleproject",
         ExpiresIn: 1 * time.Hour,
     }
-    pg := pagination.New(&pagination.Config{
+    gp := gormpage.New(&gormpage.Config{
         CacheAdapter: cache.NewElasticCache(adapterConfig),
     })
 
-    page := pg.With(model).
+    page := gp.Paging(model).
                Request(req).
                Cache("article").
                Response(&[]Article{})
@@ -834,22 +834,22 @@ type AdapterInterface interface {
 ### Clean up cache
 Clear cache by cache name
 ```go
-pg.ClearCache("article")
+gp.ClearCache("article")
 ```
 Clear multiple cache
 ```go
-pg.ClearCache("cache1", "cache2", "cache3")
+gp.ClearCache("cache1", "cache2", "cache3")
 ```
 
 Clear all cache
 ```go
-pg.ClearAllCache()
+gp.ClearAllCache()
 ```
 
 
 ## Limitations
 
-Paginate doesn't support has many relationship. You can make API with separated endpoints for parent and child:
+GormPage doesn't support has many relationship. You can make API with separated endpoints for parent and child:
 ```javascript
 GET /users
 
@@ -899,7 +899,7 @@ GET /users/1/addresses
 }
 ```
 
-Gorm-Pagination doesn't support for customized json or table field name.  
+GormPage doesn't support for customized json or table field name.  
 Make sure your struct properties have same name with gorm column and json property before you expose them.  
 
 Example bad configuration:  
@@ -928,10 +928,10 @@ type User struct {
 
 ## License
 
-Published under the [MIT License](https://github.com/usepzaka/gorm-pagination/blob/master/LICENSE).
+Published under the [MIT License](https://github.com/usepzaka/gormpage/blob/master/LICENSE).
 
 ## Credits
-Gorm-Pagination was forked from [paginate](https://github.com/morkid/paginate) as base logic. We made many changes both in terms of business logic and function to meet our needs. We also combine some logic that comes from other sources. We would like to thank all parties who have shared their code as inspiration to help develop this library.
+[GormPage](https://github.com/usepzaka/gormpage) was forked from [paginate](https://github.com/morkid/paginate) as base logic. We made many changes both in terms of business logic and function to meet our needs. We also combine some logic that comes from other sources. We would like to thank all parties who have shared their code as inspiration to help develop this library.
 #### Thanks to: 
 - [morkid](https://github.com/morkid) ==> [paginate](https://github.com/morkid/paginate) and [gocache](https://github.com/morkid/gocache)
 - [iancoleman](github.com/iancoleman) ==> [strcase](github.com/iancoleman/strcase)
