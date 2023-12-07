@@ -85,15 +85,9 @@ see more about [customize default configuration](#customize-default-configuratio
     // The result items
     "items": *[]any, 
     
-    // Total results
+    // Total records
     // including next pages
     "total": number,   
-    
-    // First seen visible record 
-    "start_item": number,   
-    
-    // Last visible record
-    "end_item": number,   
 
     // Current page
     // (provided by request parameter, eg: ?page=1)

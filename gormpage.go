@@ -234,12 +234,10 @@ func (r resContext) Response(res interface{}) Result {
 	if math.Mod(f, 1.0) > 0 {
 		f = f + 1
 	}
-	page.TotalPages = int64(f)
 	page.Page = int64(pr.Page)
+	page.TotalPages = int64(f)
 	page.Size = int64(pr.Size)
 	page.Visible = rs.RowsAffected
-	page.StartItem = int64(causes.Offset) + 1
-	page.EndItem = int64(causes.Offset) + rs.RowsAffected
 	if page.TotalPages < 1 {
 		page.TotalPages = 0
 	}
@@ -826,10 +824,8 @@ type pageFilters struct {
 type Result struct {
 	Items        interface{} `json:"items"`
 	Total        int64       `json:"total"`
-	StartItem    int64       `json:"start_item"`
-	EndItem      int64       `json:"end_item"`
-	Page         int64       `json:"page"`
 	Size         int64       `json:"size"`
+	Page         int64       `json:"page"`
 	TotalPages   int64       `json:"total_pages"`
 	Last         bool        `json:"last"`
 	First        bool        `json:"first"`
